@@ -123,20 +123,6 @@ void PoseDetNode::tag_detection_callback(const ai_msgs::msg::PerceptionTargets::
     tf2::fromMsg(tf.transform.rotation, q);
     tf2::Matrix3x3(q).getRPY(r, p, y);
 
-    // auto angle_r = angles::to_degrees(r);
-    // auto angle_p = angles::to_degrees(p);
-    // auto angle_y = angles::to_degrees(y);
-    // if (angle_r > 180) angle_r -= 360;
-    // if (angle_p > 180) angle_p -= 360;
-    // if (angle_y > 180) angle_y -= 360;
-    // if (angle_r < -180) angle_r += 360;
-    // if (angle_p < -180) angle_p += 360;
-    // if (angle_y < -180) angle_y += 360;
-    // angle_y += 90.0;
-    // RCLCPP_INFO(this->get_logger(),
-    //   "rpy degrees: %.2f, %.2f, %.2f",
-    //   angle_r, angle_p, angle_y);
-
     float yaw = y;
     if (yaw > pi) yaw -= (pi * 2.0);
     if (yaw < -1.0 * pi) yaw += (pi * 2.0);
@@ -147,15 +133,6 @@ void PoseDetNode::tag_detection_callback(const ai_msgs::msg::PerceptionTargets::
     rot_mat.getRotation(pose_q);
     pose_stamped.pose.orientation =
       tf2::toMsg(pose_q);
-
-    // {
-    //   double r, p, y;
-    //   tf2::Quaternion q;
-    //   tf2::fromMsg(pose_stamped.pose.orientation, q);
-    //   tf2::Matrix3x3(q).getRPY(r, p, y);
-    //   RCLCPP_INFO(this->get_logger(),
-    //     "yaw: %.2f", angle_y);
-    // }
 
     if (tf_pub_) {
       tf2_msgs::msg::TFMessage tf_msg;

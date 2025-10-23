@@ -1,10 +1,10 @@
 # 功能
 
-![](./imgs/rviz_web_viz.gif)
-
 用于在`RDK X5`平台检测二维码位姿的功能包。算法输入图像，输出二维码的位姿信息，包括坐标和yaw角、tf变换。
 
 二维码检测使用 [apriltag](https://github.com/christianrauch/apriltag_ros.git)算法，算法支持的二维码类型详见[apriltag-imgs](https://github.com/AprilRobotics/apriltag-imgs)。同时使用深度估计数据对坐标进行校准，最终得到精确的二维码位姿。
+
+![](./imgs/rviz_web_viz.gif)
 
 # 安装依赖
 
@@ -40,7 +40,7 @@ apt install ros-humble-apriltag-msgs ros-humble-apriltag-ros ros-humble-apriltag
 | tag_refined_position_topic | 使用深度估计校准二维码坐标后发布的topic           | tros_tag_refined_position            | 
 | tag_refined_pose_topic     | 校准和滤波后的二维码位姿topic                   | tros_tag_refined_pose                  | 
 | tag_raw_pose_frame         | 二维码检测算法发布的二维码tf的frame id           | tag36h11:0                            | 
-| tag_refined_pose_frame     | 经过校准和滤波后发布的二维码tf的frame id         | camera_link                           | 
+| tag_refined_pose_frame     | 经过校准和滤波后发布的二维码pose的frame id         | camera_link                           | 
 
 # 使用示例
 
@@ -48,7 +48,7 @@ apt install ros-humble-apriltag-msgs ros-humble-apriltag-ros ros-humble-apriltag
 
 从[apriltag-imgs](https://github.com/AprilRobotics/apriltag-imgs)获取二维码图片，并使用仓库中提供的`tag_to_svg.py`工具对图片进行放大处理。
 
-也可以使用本项目`config`路径下处理好的图片![tag36_11_00000](./config/tag36_11_00000.svg)。
+也可以使用本项目`config`路径下处理好的图片：![tag36_11_00000](./config/tag36_11_00000.svg)
 
 注意！贴二维码时需要严格按照原始图片的方向，旋转将会导致识别的二维码朝向错误。
 

@@ -34,9 +34,6 @@ def generate_launch_description() -> LaunchDescription:
     use_respawn = LaunchConfiguration('use_respawn')
     container_name = LaunchConfiguration('container_name')
     log_level = LaunchConfiguration('log_level')
-    run_slam = LaunchConfiguration('run_slam')
-    run_nav = LaunchConfiguration('run_nav')
-    run_explore = LaunchConfiguration('run_explore')
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
