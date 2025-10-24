@@ -32,7 +32,6 @@ def generate_launch_description() -> LaunchDescription:
     namespace = LaunchConfiguration('namespace')
     use_composition = LaunchConfiguration('use_composition')
     use_respawn = LaunchConfiguration('use_respawn')
-    container_name = LaunchConfiguration('container_name')
     log_level = LaunchConfiguration('log_level')
 
     declare_namespace_cmd = DeclareLaunchArgument(
@@ -91,28 +90,6 @@ def generate_launch_description() -> LaunchDescription:
             output='screen'
         ),
 
-        # fusion
-        # ros2 run hobot_obstacle_depth_fusion hobot_obstacle_depth_fusion --ros-args \
-        # -p depth_msg_topic:=/StereoNetNode/stereonet_depth -p detect_result_msg_topic:=/tros_apriltag_detections \
-        # -p camera_info_rect_topic:=/StereoNetNode/camera_info -p detect_mode:=2 -p enable_pub_ai_with_depth:=true -p enable_pcl_cvt_detect:=true \
-        # --log-level warn
-        Node(
-            package='hobot_obstacle_depth_fusion',
-            executable='hobot_obstacle_depth_fusion',
-            exec_name='hobot_obstacle_depth_fusion',
-            parameters=[
-                {'depth_msg_topic': '/StereoNetNode/stereonet_depth'},
-                {'detect_result_msg_topic': '/tros_apriltag_detections'},
-                {'camera_info_rect_topic': '/StereoNetNode/camera_info'},
-                {'detect_mode': 2},
-                {'enable_pub_ai_with_depth': True},
-                {'enable_pcl_cvt_detect': True},
-                {'pub_fusion_msg_topic_det': '/tros_tag_refined_position'}
-            ],
-            arguments=['--ros-args', '--log-level', log_level],
-            output='screen'
-        ),
-
         # pose detection
         # ros2 run tros_apriltag_det pose_det
         Node(
@@ -121,49 +98,29 @@ def generate_launch_description() -> LaunchDescription:
             exec_name='pose_det',
             output='screen'
         ),
-        Node(
-            package='hobot_codec',
-            executable='hobot_codec_republish',
-            exec_name='rectified_image_jpeg_encoder_node',
-            parameters=[
-                {'in_mode': 'ros'},
-                {'out_mode': 'ros'},
-                {'in_format': 'nv12'},
-                {'out_format': 'jpeg'},
-                {'pub_topic': '/image_jpeg'},
-                {'sub_topic': '/StereoNetNode/rectified_image'}
-            ],
-            arguments=['--ros-args', '--log-level', log_level],
-            output='screen'
-        ),
     ])
-    
-    # web viz
-    # ros2 launch websocket websocket.launch.py \
-    # websocket_image_topic:=/image_jpeg websocket_only_show_image:=false websocket_smart_topic:=/tros_tag_refined_position
-    web_node = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory('websocket'),
-                'launch/websocket.launch.py')),
-        launch_arguments={
-            'websocket_image_topic': '/image_jpeg',
-            'websocket_only_show_image': 'false',
-            'websocket_smart_topic': '/tros_tag_refined_position',
-            'log_level': log_level
-        }.items()
+
+    load_composable_nodes = LoadComposableNodes(
+        condition=IfCondition(use_composition),
+        target_container=LaunchConfiguration('container_name'),
+        composable_node_descriptions=[
+            ComposableNode(
+                package='hobot_obstacle_depth_fusion',
+                plugin='ObstacleDepthFusionNode',
+                parameters=[
+                    {'depth_msg_topic': '/StereoNetNode/stereonet_depth'},
+                    {'detect_result_msg_topic': '/tros_apriltag_detections'},
+                    {'camera_info_rect_topic': '/StereoNetNode/camera_info'},
+                    {'detect_mode': 2},
+                    {'enable_pub_ai_with_depth': True},
+                    {'enable_pcl_cvt_detect': True},
+                    {'pub_fusion_msg_topic_det': '/tros_tag_refined_position'}
+                ],
+                extra_arguments=[{'use_intra_process_comms': True}],
+            ),
+        ]
     )
 
-    # tros_lowpass_filter_node = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource(
-    #         os.path.join(get_package_share_directory('tros_lowpass_filter'),
-    #                      'launch/low_pass.launch.py')),
-    #     launch_arguments={
-    #         'lowpass_perc_sub_topic': 'tros_apriltag_detections',
-    #         'lowpass_perc_pub_topic': 'tros_apriltag_detections_filtered',
-    #         'log_level': log_level
-    #     }.items()
-    # )
 
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_composition_cmd)
@@ -171,8 +128,8 @@ def generate_launch_description() -> LaunchDescription:
     ld.add_action(declare_container_name_cmd)
     ld.add_action(declare_log_level_cmd)
     ld.add_action(declare_use_sim_time_cmd)
+    ld.add_action(declare_container_name_cmd)
     ld.add_action(bringup_cmd_group)
-    # ld.add_action(tros_lowpass_filter_node)
-    ld.add_action(web_node)
+    ld.add_action(load_composable_nodes)
 
     return ld
