@@ -20,14 +20,14 @@ apt install ros-humble-apriltag-msgs ros-humble-apriltag-ros ros-humble-apriltag
 | 名称         | 消息类型                             | 说明                                     |
 | ------------ | ------------------------------------ | ---------------------------------------- |
 | /raw_apriltag_detections | apriltag_msgs/msg/AprilTagDetectionArray          | 二维码检测算法发布的感知消息topic |
-| /tros_tag_refined_position   | ai_msgs/msg/PerceptionTargets               | 使用深度估计校准二维码坐标后发布的topic             |
+| /tros_refined_tag_position   | ai_msgs/msg/PerceptionTargets               | 使用深度估计校准二维码坐标后发布的topic             |
 
 ## 发布话题
 
 | 名称         | 消息类型                             | 说明                                     |
 | ------------ | ------------------------------------ | ---------------------------------------- |
 | /tros_apriltag_detections | ai_msgs/msg/PerceptionTargets           | 将二维码感知消息转换成tros ai msg后发布的topic |
-| /tros_tag_refined_pose   | geometry_msgs/msg/PoseStamped               | 校准和滤波后的二维码位姿topic             |
+| /tros_refined_tag_pose   | geometry_msgs/msg/PoseStamped               | 校准和滤波后的二维码位姿topic             |
 | /tf   | tf2_msgs/msg/TFMessage | 经过校准和滤波后发布的二维码tf        |
 
 
@@ -37,8 +37,8 @@ apt install ros-humble-apriltag-msgs ros-humble-apriltag-ros ros-humble-apriltag
 | ---------------- | ---------------------------- | --------------------- |
 | tag_raw_det_topic          | 二维码检测算法发布的感知消息topic                | raw_apriltag_detections              |
 | tros_bridged_tag_topic     | 将二维码感知消息转换成tros ai msg后发布的topic    | tros_apriltag_detections             | 
-| tag_refined_position_topic | 使用深度估计校准二维码坐标后发布的topic           | tros_tag_refined_position            | 
-| tag_refined_pose_topic     | 校准和滤波后的二维码位姿topic                   | tros_tag_refined_pose                  | 
+| tag_refined_position_topic | 使用深度估计校准二维码坐标后发布的topic           | tros_refined_tag_position            | 
+| tag_refined_pose_topic     | 校准和滤波后的二维码位姿topic                   | tros_refined_tag_pose                  | 
 | tag_raw_pose_frame         | 二维码检测算法发布的二维码tf的frame id           | tag36h11:0                            | 
 | tag_refined_pose_frame     | 经过校准和滤波后发布的二维码pose的frame id         | camera_link                           | 
 
@@ -61,7 +61,7 @@ ros2 launch hobot_stereonet stereonet_model_web_visual_component_v2.1.launch.py 
 3. 运行二维码识别程序
 
 ```bash
-ros2 launch tros_apriltag_det bringup.launch.py
+ros2 launch tros_apriltag_det bringup_viz.launch.py
 ```
 
 4. 运行`rviz`可视化

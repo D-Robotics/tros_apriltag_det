@@ -107,7 +107,7 @@ def generate_launch_description() -> LaunchDescription:
                 {'detect_mode': 2},
                 {'enable_pub_ai_with_depth': True},
                 {'enable_pcl_cvt_detect': True},
-                {'pub_fusion_msg_topic_det': '/tros_tag_refined_position'}
+                {'pub_fusion_msg_topic_det': '/tros_refined_tag_position'}
             ],
             arguments=['--ros-args', '--log-level', log_level],
             output='screen'
@@ -121,39 +121,8 @@ def generate_launch_description() -> LaunchDescription:
             exec_name='pose_det',
             output='screen'
         ),
-        Node(
-            package='hobot_codec',
-            executable='hobot_codec_republish',
-            exec_name='rectified_image_jpeg_encoder_node',
-            parameters=[
-                {'in_mode': 'ros'},
-                {'out_mode': 'ros'},
-                {'in_format': 'nv12'},
-                {'out_format': 'jpeg'},
-                {'pub_topic': '/image_jpeg'},
-                {'sub_topic': '/StereoNetNode/rectified_image'}
-            ],
-            arguments=['--ros-args', '--log-level', log_level],
-            output='screen'
-        ),
     ])
     
-    # web viz
-    # ros2 launch websocket websocket.launch.py \
-    # websocket_image_topic:=/image_jpeg websocket_only_show_image:=false websocket_smart_topic:=/tros_tag_refined_position
-    web_node = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory('websocket'),
-                'launch/websocket.launch.py')),
-        launch_arguments={
-            'websocket_image_topic': '/image_jpeg',
-            'websocket_only_show_image': 'false',
-            'websocket_smart_topic': '/tros_tag_refined_position',
-            'log_level': log_level
-        }.items()
-    )
-
     # tros_lowpass_filter_node = IncludeLaunchDescription(
     #     PythonLaunchDescriptionSource(
     #         os.path.join(get_package_share_directory('tros_lowpass_filter'),
@@ -173,6 +142,5 @@ def generate_launch_description() -> LaunchDescription:
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(bringup_cmd_group)
     # ld.add_action(tros_lowpass_filter_node)
-    ld.add_action(web_node)
 
     return ld

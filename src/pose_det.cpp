@@ -26,13 +26,13 @@ public:
     : Node("tros_apriltag_pose_det")
     {
       tag_refined_position_topic_ = this->declare_parameter("tag_refined_position_topic", tag_refined_position_topic_);
-      tag_refined_pose_topic_ = this->declare_parameter("tros_bridged_tag_topic", tag_refined_pose_topic_);
+      tag_refined_pose_topic_ = this->declare_parameter("tag_refined_pose_topic", tag_refined_pose_topic_);
       tag_raw_pose_frame_ = this->declare_parameter("tag_raw_pose_frame", tag_raw_pose_frame_);
       tag_refined_pose_frame_ = this->declare_parameter("tag_refined_pose_frame", tag_refined_pose_frame_);
 
       RCLCPP_WARN(this->get_logger(),
-        "\n     tros_bridged_tag_topic: %s" \
         "\n tag_refined_position_topic: %s" \
+        "\n     tag_refined_pose_topic: %s" \
         "\n         tag_raw_pose_frame: %s" \
         "\n     tag_refined_pose_frame: %s",
         tag_refined_position_topic_.c_str(),
@@ -70,8 +70,8 @@ private:
   rclcpp::TimerBase::SharedPtr timer_ = nullptr;
   void timer_callback();
 
-  std::string tag_refined_position_topic_ = "tros_tag_refined_position";
-  std::string tag_refined_pose_topic_ = "tros_tag_refined_pose";
+  std::string tag_refined_position_topic_ = "tros_refined_tag_position";
+  std::string tag_refined_pose_topic_ = "tros_refined_tag_pose";
   rclcpp::Subscription<ai_msgs::msg::PerceptionTargets>::SharedPtr tag_raw_pose_sub_ = nullptr;
   rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr tag_refined_pose_sub_ = nullptr;
   rclcpp::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr tf_pub_ = nullptr;
@@ -150,6 +150,9 @@ void PoseDetNode::tag_detection_callback(const ai_msgs::msg::PerceptionTargets::
       tf_pub_->publish(std::move(tf_msg));
     }
 
+    RCLCPP_WARN_ONCE(this->get_logger(),
+      "Publish tag_refined_pose with topic '%s', this msg appears only once",
+      tag_refined_pose_topic_.c_str());
     tag_refined_pose_sub_->publish(std::move(pose_stamped));
   }
   catch(const std::exception& e)
