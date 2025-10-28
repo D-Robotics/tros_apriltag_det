@@ -109,7 +109,8 @@ def generate_launch_description() -> LaunchDescription:
                 {'enable_pcl_cvt_detect': True},
                 {'pub_fusion_msg_topic_det': '/tros_refined_tag_position'}
             ],
-            arguments=['--ros-args', '--log-level', log_level],
+            # arguments=['--ros-args', '--log-level', log_level],
+            arguments=['--ros-args', '--log-level', 'warn'],
             output='screen'
         ),
 
