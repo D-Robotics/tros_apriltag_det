@@ -66,7 +66,7 @@ def generate_launch_description() -> LaunchDescription:
     bringup_cmd_group = GroupAction([
         # apriltag detection
         # ros2 run apriltag_ros apriltag_node --ros-args -p image_transport:=compressed -p family:=36h11 \
-        # -r /camera_info:=/StereoNetNode/camera_info -r /image_rect/compressed:=/image_jpeg \
+        # -r /camera_info:=/StereoNetNode/stereonet_depth/camera_info -r /image_rect/compressed:=/image_jpeg \
         # -p detector.decimate:=1.0 -p size:=0.2
         Node(
             package='apriltag_ros',
@@ -77,7 +77,7 @@ def generate_launch_description() -> LaunchDescription:
                         {'size': 0.2},
                         {'detector.decimate': 1.0}
             ],
-            arguments=['--ros-args', '--log-level', log_level, '-r', '/camera_info:=/StereoNetNode/camera_info', '-r', '/image_rect/compressed:=/image_jpeg'],
+            arguments=['--ros-args', '--log-level', log_level, '-r', '/camera_info:=/StereoNetNode/stereonet_depth/camera_info', '-r', '/image_rect/compressed:=/image_jpeg_compressed'],
             output='screen'
         ),
         
@@ -94,7 +94,7 @@ def generate_launch_description() -> LaunchDescription:
         # fusion
         # ros2 run hobot_obstacle_depth_fusion hobot_obstacle_depth_fusion --ros-args \
         # -p depth_msg_topic:=/StereoNetNode/stereonet_depth -p detect_result_msg_topic:=/tros_apriltag_detections \
-        # -p camera_info_rect_topic:=/StereoNetNode/camera_info -p detect_mode:=2 -p enable_pub_ai_with_depth:=true -p enable_pcl_cvt_detect:=true \
+        # -p camera_info_rect_topic:=/StereoNetNode/stereonet_depth/camera_info -p detect_mode:=2 -p enable_pub_ai_with_depth:=true -p enable_pcl_cvt_detect:=true \
         # --log-level warn
         Node(
             package='hobot_obstacle_depth_fusion',
@@ -103,7 +103,7 @@ def generate_launch_description() -> LaunchDescription:
             parameters=[
                 {'depth_msg_topic': '/StereoNetNode/stereonet_depth'},
                 {'detect_result_msg_topic': '/tros_apriltag_detections'},
-                {'camera_info_rect_topic': '/StereoNetNode/camera_info'},
+                {'camera_info_rect_topic': '/StereoNetNode/stereonet_depth/camera_info'},
                 {'detect_mode': 2},
                 {'enable_pub_ai_with_depth': True},
                 {'enable_pcl_cvt_detect': True},
