@@ -77,7 +77,7 @@ def generate_launch_description() -> LaunchDescription:
                         {'size': 0.2},
                         {'detector.decimate': 1.0}
             ],
-            arguments=['--ros-args', '--log-level', log_level, '-r', '/camera_info:=/StereoNetNode/camera_info', '-r', '/image_rect/compressed:=/image_jpeg_compressed'],
+            arguments=['--ros-args', '--log-level', log_level, '-r', '/camera_info:=/StereoNetNode/camera_info', '-r', '/image_rect/compressed:=/image_jpeg'],
             output='screen'
         ),
         
